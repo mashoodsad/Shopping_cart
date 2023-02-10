@@ -22,6 +22,8 @@ late int id;
   late String price;
   late String description;
 
+  get size => null;
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;

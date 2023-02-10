@@ -8,7 +8,6 @@ import 'Categories.dart';
 import 'DetailsScreen.dart';
 import 'bloc_user_bloc.dart';
 
-import 'generated/constants.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -107,10 +106,12 @@ class _HomePageState extends State<HomePage> {
                 var s=model.data[index] as Data;
                 return GestureDetector(
                   onTap: (){
+                    print(s.name);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                        builder: (context) => DetailsScreen()
+                        builder: (context) => DetailsScreen(name:s.name,price:s.price.toString(),image:s.image,description:s.description,
+                        )
                     )
                     );
                   },
@@ -122,10 +123,9 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           children: <Widget>[
 
-                            Image.network('${s.image}'),
+                           Image.network('${s.image}'),
                             Text(
                                 "name: ${s.name}"),
-                            Text("Brand: ${s.brand}"),
                             Text(
                                 "price: Rs${s.price}"),
 
