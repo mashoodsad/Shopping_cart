@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:samplejsonbloc/Data.dart';
 import 'package:samplejsonbloc/Product.dart';
-
 import 'Categories.dart';
 import 'DetailsScreen.dart';
 import 'bloc_user_bloc.dart';
@@ -81,29 +79,28 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
   Widget _buildCard(BuildContext context, Product model) {
     return Column(
       children: [Align(alignment: Alignment.topLeft,
         child: Text('Shopping', style: Theme.of(context)
           .textTheme
-          .headline5
+          .headlineSmall
           ?.copyWith(fontWeight: FontWeight.bold),),
       ),
-        Categories(),
+        const Categories(),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
             child: GridView.builder(
-                itemCount: model.data!.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                itemCount: model.data.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: kDefaultPaddin,
                   crossAxisSpacing: kDefaultPaddin,
                   childAspectRatio: 0.75,
                 ),
               itemBuilder: (context, index) {
-                var s=model.data[index] as Data;
+                var s=model.data[index];
                 return GestureDetector(
                   onTap: (){
                     print(s.name);
@@ -116,20 +113,20 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   child: Container(
-                    margin: EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.all(8.0),
                     child: Card(
                       child: Container(
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         child: Column(
                           children: <Widget>[
 
-                           Image.network('${s.image}'),
+                           Hero(
+                               tag: s.image,
+                               child: Image.network(s.image)),
                             Text(
                                 "name: ${s.name}"),
                             Text(
                                 "price: Rs${s.price}"),
-
-
                           ],
                         ),
                       ),
@@ -143,8 +140,7 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
-  Widget _buildLoading() => Center(child: CircularProgressIndicator());
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 
   AppBar buildAppBar() {
     return AppBar(
@@ -171,7 +167,7 @@ class _HomePageState extends State<HomePage> {
           ),
           onPressed: () {},
         ),
-        SizedBox(width: kDefaultPaddin / 2)
+        const SizedBox(width: kDefaultPaddin / 2)
       ],
     );
   }

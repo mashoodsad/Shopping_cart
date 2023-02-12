@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:samplejsonbloc/Data.dart';
-
 
 class DetailsScreen extends StatelessWidget {
   late String name;
@@ -11,9 +9,8 @@ class DetailsScreen extends StatelessWidget {
   late String image;
   late String description;
 
-  DetailsScreen({Key? key,required this.name, required this.price, required this.image, required this.description});
-
-
+  DetailsScreen({Key? key,required this.name, required this.price,
+    required this.image, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +30,7 @@ class DetailsScreen extends StatelessWidget {
                     right: 20,
                   ),
                   // height: 500,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.grey,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
@@ -44,13 +41,13 @@ class DetailsScreen extends StatelessWidget {
                     height: MediaQuery.of(context).size.height,
                     child: Column(
                       children: <Widget>[
-                        SizedBox(height: 20 / 2),
-                        Text(name,style: TextStyle(fontSize: 22),),
-                        Text("${description}",),
-                        SizedBox(height: 20 / 2),
-                        CounterWithFavBtn(),
-                        SizedBox(height: 20 / 2),
-                        payment(),
+                        const SizedBox(height: 20 / 2),
+                        Text(name,style: const TextStyle(fontSize: 22),),
+                        Text(description),
+                        const SizedBox(height: 20 / 2),
+                        const CounterWithFavBtn(),
+                        const SizedBox(height: 20 / 2),
+                        const payment(),
 
 
                       ],
@@ -62,7 +59,9 @@ class DetailsScreen extends StatelessWidget {
                   child: SizedBox(
                       height: 200,
                       width: 200,
-                      child: Image.network("${image}")),
+                      child: Hero(
+                          tag: image,
+                          child: Image.network(image))),
                 )
               ],
             ),
@@ -89,7 +88,7 @@ class ColorAndSize extends StatelessWidget {
       children: [
         Row(
           children: <Widget>[
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -100,9 +99,9 @@ class ColorAndSize extends StatelessWidget {
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: TextStyle(color: kTextColor),
+                  style: const TextStyle(color: kTextColor),
                   children: [
-                    TextSpan(text: "Size\n"),
+                    const TextSpan(text: "Size\n"),
                     TextSpan(
                       text: "${product.size} cm",
                       style: Theme.of(context)
