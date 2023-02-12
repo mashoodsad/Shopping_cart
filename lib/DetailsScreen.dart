@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:samplejsonbloc/Data.dart';
 
-import 'Product.dart';
 
 class DetailsScreen extends StatelessWidget {
   late String name;
   late String price;
   late String image;
+  late String description;
 
   DetailsScreen({Key? key,required this.name, required this.price, required this.image, required this.description});
 
-  late String description;
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,28 +34,36 @@ class DetailsScreen extends StatelessWidget {
                   ),
                   // height: 500,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
                   ),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 20 / 2),
-                      Text(name,style: TextStyle(fontSize: 22),),
-                      Text("${description}",),
-                      SizedBox(height: 20 / 2),
-                      CounterWithFavBtn(),
-                      SizedBox(height: 20 / 2),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 20 / 2),
+                        Text(name,style: TextStyle(fontSize: 22),),
+                        Text("${description}",),
+                        SizedBox(height: 20 / 2),
+                        CounterWithFavBtn(),
+                        SizedBox(height: 20 / 2),
+                        payment(),
 
-                    ],
+
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Image.network("${image}"))
+                Padding(
+                  padding: const EdgeInsets.only(left: 250.0,top: 50.0),
+                  child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Image.network("${image}")),
+                )
               ],
             ),
           )
@@ -75,33 +85,39 @@ class ColorAndSize extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("Color"),
-            ],
-          ),
-        ),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(color: kTextColor),
-              children: [
-                TextSpan(text: "Size\n"),
-                TextSpan(
-                  text: "${product.size} cm",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                )
-              ],
+    return Column(
+      children: [
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Color"),
+                ],
+              ),
             ),
-          ),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(color: kTextColor),
+                  children: [
+                    TextSpan(text: "Size\n"),
+                    TextSpan(
+                      text: "${product.size} cm",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+
+          ],
         ),
+
       ],
     );
   }
@@ -169,3 +185,83 @@ const kTextColor = Color(0xFF535353);
 const kTextLightColor = Color(0xFFACACAC);
 
 const kDefaultPaddin = 20.0;
+
+class payment extends StatefulWidget {
+  const payment({Key? key}) : super(key: key);
+
+  @override
+  State<payment> createState() => _paymentState();
+}
+
+class _paymentState extends State<payment> {
+  late Razorpay _razorpay;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [FloatingActionButton.extended(onPressed:openCheckout,
+        backgroundColor: Colors.purple,hoverElevation: 50,
+        splashColor: Colors.green, label:const Text('Payment'), ),
+
+      ],
+    );
+  }
+  @override
+  void initState() {
+    super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+  void openCheckout()
+       async {
+    print('payment loading');
+
+    var options = {
+      'key': 'rzp_live_ILgsfZCZoFIKMb',
+      'amount': 500,
+      'name': 'Abc',
+      'description': 'shdf',
+      'retry': {'enabled': true, 'max_count': 1},
+      'send_sms_hash': true,
+      'prefill': {'contact': '9567525568', 'email': 'mashoodsad@gmail.com'},
+      'external': {
+        'wallets': ['paytm','Gpay',"Phonepe"]
+      }
+};
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error: e');
+    }
+  }
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    print('Success Response: $response');
+    /*Fluttertoast.showToast(
+        msg: "SUCCESS: " + response.paymentId!,
+        toastLength: Toast.LENGTH_SHORT); */
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print('Error Response: $response');
+    /* Fluttertoast.showToast(
+        msg: "ERROR: " + response.code.toString() + " - " + response.message!,
+        toastLength: Toast.LENGTH_SHORT); */
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    print('External SDK Response: $response');
+    /* Fluttertoast.showToast(
+        msg: "EXTERNAL_WALLET: " + response.walletName!,
+        toastLength: Toast.LENGTH_SHORT); */
+  }
+}
